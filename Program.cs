@@ -1,2 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using board;
+
+Position position;
+
+position = new Position(3,4);
+
+Console.WriteLine("Position: " + position);
+
+Console.ReadLine();
