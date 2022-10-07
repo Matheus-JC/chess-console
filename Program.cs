@@ -1,9 +1,7 @@
 ﻿using board;
 
-Position position;
+Board board = new Board(8, 8);
 
-position = new Position(3,4);
-
-Console.WriteLine("Position: " + position);
+Screen.PrintBoard(board);
 
 Console.ReadLine();
