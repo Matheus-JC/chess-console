@@ -17,4 +17,9 @@ class Board
     {
         return _pieces[line, column];
     }
+
+    public void PutPiece(Piece piece, Position pos)
+    {
+        _pieces[pos.Line, pos.Column] = piece;
+    }
 }
