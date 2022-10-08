@@ -14,4 +14,9 @@ class Piece
         Position = null;
         MovesNumber = 0;
     }
+
+    public void IncreaseMovimentsNumber()
+    {
+        MovesNumber++;
+    }
 }

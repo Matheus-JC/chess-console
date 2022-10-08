@@ -1,4 +1,5 @@
 using board;
+using chess;
 
 class Screen
 {
@@ -8,7 +9,7 @@ class Screen
         {
             Console.Write(8 - i + " ");
             for(int j = 0; j < board.Columns; j++){
-                Piece piece = board.GetPiece(i, j);
+                Piece? piece = board.GetPiece(i, j);
                 
                 if(piece != null)
                 {
@@ -41,5 +42,19 @@ class Screen
             Console.Write(piece);
             Console.ForegroundColor = aux;
         }
+    }
+
+    public static ChessPosition ReadChessPosition()
+    {
+        string? typedValue = Console.ReadLine();
+
+        if(String.IsNullOrEmpty(typedValue))
+        {
+            throw new BoardException("Entered value is invalid");
+        }
+
+        char column = typedValue[0];
+        int line = int.Parse(typedValue[1] + "");
+        return new ChessPosition(column, line);
     }
 }

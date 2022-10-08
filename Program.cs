@@ -3,15 +3,33 @@ using chess;
 
 try
 {
-    Board board = new Board(8, 8);
+    ChessGame game = new ChessGame();
 
-    board.PutPiece(new Tower(board, Color.Black), new Position(0, 0));
-    board.PutPiece(new Tower(board, Color.Black), new Position(1, 3));
-    board.PutPiece(new King(board, Color.Black), new Position(0, 2));
+    while(!game.finished)
+    {
+        Console.Clear();
+        
+        if(game.Board == null)
+        {
+            throw new BoardException("Board is Empty");
+        }
+        
+        Screen.PrintBoard(game.Board);
 
-    board.PutPiece(new Tower(board, Color.White), new Position(3, 5));
+        Console.WriteLine();
+        Console.Write("Origin Position: ");
+        Position posOrigin = Screen.ReadChessPosition().ToPosition();
 
-    Screen.PrintBoard(board);
+        Console.Write("Destiny Position: ");
+        Position posDestiny = Screen.ReadChessPosition().ToPosition();
+
+        game.PerformMoviment(posOrigin, posDestiny);
+    }
+    
+    if(game.Board != null)
+    {
+        Screen.PrintBoard(game.Board);
+    }
 }
 catch(BoardException exc)
 {
