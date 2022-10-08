@@ -4,7 +4,7 @@ namespace chess;
 
 class ChessGame
 {
-    public Board? Board { get; private set; }
+    public Board Board { get; private set; }
     private int _turn;
     private Color _currentPlayer;
     public bool finished { get; private set; }
