@@ -18,7 +18,7 @@ class King : Piece
         return piece == null || piece.Color != Color;
     }
 
-    public override bool[,] PossibleMoviments()
+    public override bool[,] PossibleMoves()
     {
         bool[,] arr = new bool[Board.Lines, Board.Columns];
 

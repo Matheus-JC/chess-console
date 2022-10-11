@@ -5,38 +5,53 @@ try
 {
     ChessGame game = new ChessGame();
 
-    while(!game.finished)
+    while(!game.Finished)
     {
-        Console.Clear();
-        
-        if(game.Board == null)
+        try
         {
-            throw new BoardException("Board is Empty");
+
+            Console.Clear();
+            
+            if(game.Board == null)
+            {
+                throw new BoardException("Board is Empty");
+            }
+            
+            Screen.PrintBoard(game.Board);
+            Console.WriteLine();
+            Console.WriteLine("Turn: " + game.Turn);
+            Console.WriteLine("Waiting for play: " + game.CurrentPlayer);
+
+            Console.WriteLine();
+            Console.Write("Origin Position: ");
+            Position posOrigin = Screen.ReadChessPosition().ToPosition();
+
+            game.ValidateOriginPosition(posOrigin);
+
+            Piece? originPiece = game.Board.GetPiece(posOrigin);
+
+            if(originPiece == null)
+            {
+                throw new BoardException("OPrigin Piece is Empty");
+            }
+
+            bool[,] possiblePositions = originPiece.PossibleMoves();
+
+            Console.Clear();
+            Screen.PrintBoard(game.Board, possiblePositions);
+
+            Console.WriteLine();
+            Console.Write("Destiny Position: ");
+            Position posDestiny = Screen.ReadChessPosition().ToPosition();
+            game.ValidateDestinyPosition(posOrigin, posDestiny);
+
+            game.MakesMove(posOrigin, posDestiny);
         }
-        
-        Screen.PrintBoard(game.Board);
-
-        Console.WriteLine();
-        Console.Write("Origin Position: ");
-        Position posOrigin = Screen.ReadChessPosition().ToPosition();
-
-        Piece? originPiece = game.Board.GetPiece(posOrigin);
-
-        if(originPiece == null)
+        catch(BoardException exc)
         {
-            throw new BoardException("OPrigin Piece is Empty");
+            Console.WriteLine(exc.Message);
+            Console.ReadLine();
         }
-
-        bool[,] possiblePositions = originPiece.PossibleMoviments();
-
-        Console.Clear();
-        Screen.PrintBoard(game.Board, possiblePositions);
-
-        Console.WriteLine();
-        Console.Write("Destiny Position: ");
-        Position posDestiny = Screen.ReadChessPosition().ToPosition();
-
-        game.PerformMoviment(posOrigin, posDestiny);
     }
     
     if(game.Board != null)
