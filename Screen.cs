@@ -3,6 +3,42 @@ using chess;
 
 class Screen
 {
+    public static void PrintMatch(ChessGame chessGame)
+    {
+        if(chessGame.Board == null)
+        {
+            throw new BoardException("Board is Empty");
+        }
+        
+        Screen.PrintBoard(chessGame.Board);
+        Console.WriteLine();
+        PrintCapturedPieces(chessGame);
+        Console.WriteLine();
+        Console.WriteLine("Turn: " + chessGame.Turn);
+        Console.WriteLine("Waiting for play: " + chessGame.CurrentPlayer);
+    }
+
+    public static void PrintCapturedPieces(ChessGame chessGame)
+    {
+        Console.WriteLine("Captured pieces: ");
+
+        Console.Write("White: ");
+        PrintPiecesSet(chessGame.GetCapturedPieces(Color.White));
+
+        Console.WriteLine();
+        Console.Write("Black: ");
+        ConsoleColor defaultFgColor = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        PrintPiecesSet(chessGame.GetCapturedPieces(Color.Black));
+        Console.ForegroundColor = defaultFgColor;
+        Console.WriteLine();
+    }
+
+    public static void PrintPiecesSet(HashSet<Piece> pieceSet)
+    {
+        Console.Write("[" + String.Join(' ', pieceSet) + "]");
+    }
+
     public static void PrintBoard(Board board)
     {
         for (int i = 0; i < board.Lines; i++)
