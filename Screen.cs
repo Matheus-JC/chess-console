@@ -9,18 +9,7 @@ class Screen
         {
             Console.Write(8 - i + " ");
             for(int j = 0; j < board.Columns; j++){
-                Piece? piece = board.GetPiece(i, j);
-                
-                if(piece != null)
-                {
-                    PrintPiece(piece);
-                }
-                else
-                {
-                    Console.Write("-");
-                }
-
-                Console.Write(" ");
+                PrintPiece(board.GetPiece(i, j));
             }
 
             Console.WriteLine();
@@ -29,19 +18,48 @@ class Screen
         Console.WriteLine("  a b c d e f g h");
     }
 
-    public static void PrintPiece(Piece piece)
+    public static void PrintBoard(Board board, bool[,] possiblePositions)
     {
-        if(piece.Color == Color.White)
+        ConsoleColor originalBackGround = Console.BackgroundColor;
+        ConsoleColor backGroundChanged = ConsoleColor.DarkGray;
+
+        for (int i = 0; i < board.Lines; i++)
         {
-            Console.Write(piece);
+            Console.Write(8 - i + " ");
+            for(int j = 0; j < board.Columns; j++){
+                Console.BackgroundColor = possiblePositions[i, j] ? backGroundChanged : originalBackGround;
+                PrintPiece(board.GetPiece(i, j));
+                Console.BackgroundColor = originalBackGround;
+            }
+
+            Console.WriteLine();
         }
-        else
+
+        Console.WriteLine("  a b c d e f g h");
+        Console.BackgroundColor = originalBackGround;
+    }
+
+    public static void PrintPiece(Piece? piece)
+    {
+        if(piece == null)
         {
-            ConsoleColor aux = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write(piece);
-            Console.ForegroundColor = aux;
+            Console.Write("-");
         }
+        else{
+            if(piece.Color == Color.White)
+            {
+                Console.Write(piece);
+            }
+            else
+            {
+                ConsoleColor aux = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(piece);
+                Console.ForegroundColor = aux;
+            }
+        }
+
+        Console.Write(" ");
     }
 
     public static ChessPosition ReadChessPosition()

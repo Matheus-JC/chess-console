@@ -20,6 +20,19 @@ try
         Console.Write("Origin Position: ");
         Position posOrigin = Screen.ReadChessPosition().ToPosition();
 
+        Piece? originPiece = game.Board.GetPiece(posOrigin);
+
+        if(originPiece == null)
+        {
+            throw new BoardException("OPrigin Piece is Empty");
+        }
+
+        bool[,] possiblePositions = originPiece.PossibleMoviments();
+
+        Console.Clear();
+        Screen.PrintBoard(game.Board, possiblePositions);
+
+        Console.WriteLine();
         Console.Write("Destiny Position: ");
         Position posDestiny = Screen.ReadChessPosition().ToPosition();
 
