@@ -20,6 +20,11 @@ abstract class Piece
         MovesNumber++;
     }
 
+    public void DecreaseMovimentsNumber()
+    {
+        MovesNumber--;
+    }
+
     public bool ExistPossibleMoves()
     {
         bool[,] possibleMoves = PossibleMoves();

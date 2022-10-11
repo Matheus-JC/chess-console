@@ -8,6 +8,7 @@ class ChessGame
     public int Turn { get; private set; }
     public Color CurrentPlayer { get; private set; }
     public bool Finished { get; private set; }
+    public bool check { get; private set; }
     private HashSet<Piece> Pieces;
     private HashSet<Piece> CapturedPieces;
 
@@ -17,12 +18,13 @@ class ChessGame
         Turn = 1;
         CurrentPlayer = Color.White;
         Finished = false;
+        check = false;
         Pieces = new HashSet<Piece>();
         CapturedPieces = new HashSet<Piece>();
         PutPieces();
     }
 
-    private void PerformMoviment(Position posOrigin, Position posDestiny)
+    private Piece? PerformMoviment(Position posOrigin, Position posDestiny)
     {
         if(Board == null)
         {
@@ -44,6 +46,28 @@ class ChessGame
         {
             CapturedPieces.Add(caputuredPiece);
         }
+
+        return caputuredPiece;
+    }
+
+    private void UndoMove(Position posOrigin, Position posDestiny, Piece? capturedPiece)
+    {
+        Piece? piece = Board.RemovePiece(posDestiny);
+
+        if(piece == null)
+        {
+            throw new BoardException("There is no piece in the specified destination position!");
+        }
+
+        piece.DecreaseMovimentsNumber();
+
+        if(capturedPiece != null)
+        {
+            Board.PutPiece(capturedPiece, posDestiny);
+            CapturedPieces.Remove(capturedPiece);
+        }
+
+        Board.PutPiece(piece, posOrigin);
     }
 
     private void SwitchPlayer()
@@ -51,9 +75,27 @@ class ChessGame
         CurrentPlayer = CurrentPlayer == Color.White ? Color.Black : Color.White;
     }
 
+    private Color GetAdversary(Color color)
+    {
+        return color == Color.White ? Color.Black : Color.White;
+    }
+
+    private Piece? GetKing(Color color)
+    {
+        return GetPiecesStillInPLay(color).FirstOrDefault(piece => piece is King);
+    }
+
     public void MakesMove(Position posOrigin, Position posDestiny)
     {
-        PerformMoviment(posOrigin, posDestiny);
+        Piece? capturedPiece = PerformMoviment(posOrigin, posDestiny);
+
+        if(IsItInCheck(CurrentPlayer))
+        {
+            UndoMove(posOrigin, posDestiny,capturedPiece);
+            throw new BoardException("You cannot put yourself in check!");
+        }
+
+        check = IsItInCheck(GetAdversary(CurrentPlayer));
         Turn++;
         SwitchPlayer();
     }
@@ -103,7 +145,34 @@ class ChessGame
         HashSet<Piece> piecesInPlay = Pieces.Where(piece => piece.Color == color).ToHashSet();
         piecesInPlay.ExceptWith(GetCapturedPieces(color));
         return piecesInPlay;
-    } 
+    }
+
+    public bool IsItInCheck(Color color)
+    {
+        Piece? king = GetKing(color);
+
+        if(king == null)
+        {
+            throw new BoardException($"There is no {color} king on the board!");
+        }
+
+        if(king.Position == null)
+        {
+            throw new BoardException($"The {color} king is not in any position!");
+        }
+
+        foreach(Piece piece in GetPiecesStillInPLay(GetAdversary(color)))
+        {
+            bool[,] possibleMoves = piece.PossibleMoves();
+
+            if(possibleMoves[king.Position.Line, king.Position.Column])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public void PutNewPiece(char column, int line, Piece piece)
     {

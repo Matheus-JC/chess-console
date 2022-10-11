@@ -16,6 +16,12 @@ class Screen
         Console.WriteLine();
         Console.WriteLine("Turn: " + chessGame.Turn);
         Console.WriteLine("Waiting for play: " + chessGame.CurrentPlayer);
+        
+        if(chessGame.check)
+        {
+            Console.WriteLine();
+            Console.WriteLine("CHECK!");
+        }
     }
 
     public static void PrintCapturedPieces(ChessGame chessGame)
