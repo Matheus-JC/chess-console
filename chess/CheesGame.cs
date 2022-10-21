@@ -137,7 +137,7 @@ class ChessGame
             throw new BoardException("Origin piece is empty!");
         }
 
-        if(!originPiece.CanMoveTo(posDestiny))
+        if(!originPiece.IsPossibleMove(posDestiny))
         {
             throw new BoardException("Invalid destiny position!");
         }
