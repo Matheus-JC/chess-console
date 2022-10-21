@@ -48,4 +48,10 @@ abstract class Piece
     }
 
     public abstract bool[,] GetPossibleMoves();
+
+    protected bool CanMove(Position pos)
+    {
+        Piece? piece = Board.GetPiece(pos);
+        return piece == null || piece.Color != Color;
+    }
 }

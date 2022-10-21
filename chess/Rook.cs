@@ -2,20 +2,14 @@ using board;
 
 namespace chess;
 
-class Tower : Piece
+class Rook : Piece
 {
-    public Tower(Board board, Color color) : base(board, color)
+    public Rook(Board board, Color color) : base(board, color)
     {}
 
     public override string ToString()
     {
-        return "T";
-    }
-
-    private bool CanMove(Position pos)
-    {
-        Piece? piece = Board.GetPiece(pos);
-        return piece == null || piece.Color != Color;
+        return "R";
     }
 
     public override bool[,] GetPossibleMoves()

@@ -2,14 +2,14 @@ using board;
 
 namespace chess;
 
-class King : Piece
+class Knight : Piece
 {
-    public King(Board board, Color color) : base(board, color)
+    public Knight(Board board, Color color) : base(board, color)
     {}
 
     public override string ToString()
     {
-        return "K";
+        return "N";
     }
 
     public override bool[,] GetPossibleMoves()
@@ -19,57 +19,49 @@ class King : Piece
         Position pos = new Position(0, 0);
 
         if(Position != null){
-            // north
-            pos.SetValues(Position.Line - 1, Position.Column);
+            pos.SetValues(Position.Line - 1, Position.Column - 2);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // northeast
-            pos.SetValues(Position.Line - 1, Position.Column + 1);
+            pos.SetValues(Position.Line - 2, Position.Column - 1);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // east
-            pos.SetValues(Position.Line, Position.Column + 1);
+            pos.SetValues(Position.Line - 2, Position.Column + 1);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // southeast
-            pos.SetValues(Position.Line + 1, Position.Column + 1);
+            pos.SetValues(Position.Line - 1, Position.Column + 2);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // south
-            pos.SetValues(Position.Line + 1, Position.Column);
+            pos.SetValues(Position.Line + 1, Position.Column + 2);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // south-west
-            pos.SetValues(Position.Line + 1, Position.Column - 1);
+            pos.SetValues(Position.Line + 2, Position.Column + 1);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // west
-            pos.SetValues(Position.Line, Position.Column - 1);
+            pos.SetValues(Position.Line + 2, Position.Column - 1);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
             }
 
-            // northwest
-            pos.SetValues(Position.Line - 1, Position.Column - 1);
+            pos.SetValues(Position.Line + 1, Position.Column - 2);
             if(Board.ValidPosition(pos) && CanMove(pos))
             {
                 arr[pos.Line, pos.Column] = true;
