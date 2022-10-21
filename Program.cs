@@ -9,7 +9,6 @@ try
     {
         try
         {
-
             Console.Clear();
             Screen.PrintMatch(chessGame);
             
@@ -26,7 +25,7 @@ try
                 throw new BoardException("OPrigin Piece is Empty");
             }
 
-            bool[,] possiblePositions = originPiece.PossibleMoves();
+            bool[,] possiblePositions = originPiece.GetPossibleMoves();
 
             Console.Clear();
             Screen.PrintBoard(chessGame.Board, possiblePositions);
@@ -45,10 +44,8 @@ try
         }
     }
     
-    if(chessGame.Board != null)
-    {
-        Screen.PrintBoard(chessGame.Board);
-    }
+    Console.Clear();
+    Screen.PrintMatch(chessGame);
 }
 catch(BoardException exc)
 {

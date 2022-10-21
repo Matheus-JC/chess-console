@@ -15,12 +15,22 @@ class Screen
         PrintCapturedPieces(chessGame);
         Console.WriteLine();
         Console.WriteLine("Turn: " + chessGame.Turn);
-        Console.WriteLine("Waiting for play: " + chessGame.CurrentPlayer);
-        
-        if(chessGame.check)
+
+        if(!chessGame.Finished)
+        {
+            Console.WriteLine("Waiting for play: " + chessGame.CurrentPlayer);
+
+            if(chessGame.Check)
+            {
+                Console.WriteLine();
+                Console.WriteLine("CHECK!");
+            }
+        }
+        else
         {
             Console.WriteLine();
-            Console.WriteLine("CHECK!");
+            Console.WriteLine("CHECKMATE!");
+            Console.WriteLine("Winner: " + chessGame.CurrentPlayer);
         }
     }
 
