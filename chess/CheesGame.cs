@@ -9,6 +9,7 @@ class ChessGame
     public Color CurrentPlayer { get; private set; }
     public bool Finished { get; private set; }
     public bool Check { get; private set; }
+    public Piece? VulnerableEnPassant { get; private set; }
     private HashSet<Piece> Pieces;
     private HashSet<Piece> CapturedPieces;
 
@@ -19,6 +20,7 @@ class ChessGame
         CurrentPlayer = Color.White;
         Finished = false;
         Check = false;
+        VulnerableEnPassant = null;
         Pieces = new HashSet<Piece>();
         CapturedPieces = new HashSet<Piece>();
         PutPieces();
@@ -31,35 +33,60 @@ class ChessGame
             throw new BoardException("Board is Empty!");
         }
 
-        Piece? origemPiece = Board.RemovePiece(posOrigin);
+        Piece? piece = Board.RemovePiece(posOrigin);
 
-        if(origemPiece == null)
+        if(piece == null)
         {
             throw new BoardException("Piece not found!");
         }
 
-        origemPiece.IncreaseMovimentsNumber();
-        Piece? caputuredPiece = Board.RemovePiece(posDestiny);
-        Board.PutPiece(origemPiece, posDestiny);
+        piece.IncreaseMovimentsNumber();
+        Piece? capturedPiece = Board.RemovePiece(posDestiny);
+        Board.PutPiece(piece, posDestiny);
         
-        if(caputuredPiece != null)
+        if(capturedPiece != null)
         {
-            CapturedPieces.Add(caputuredPiece);
+            CapturedPieces.Add(capturedPiece);
         }
 
         // #SpecialMove Castling kingside (short)
-        if (origemPiece is King && posDestiny.Column == posOrigin.Column + 2)
+        if (piece is King && posDestiny.Column == posOrigin.Column + 2)
         {
             DoShortCastling(posOrigin);
         }
 
         // #SpecialMove Castling queenside (long)
-        if (origemPiece is King && posDestiny.Column == posOrigin.Column - 2)
+        if (piece is King && posDestiny.Column == posOrigin.Column - 2)
         {
             DoLongCastling(posOrigin);
         }
 
-        return caputuredPiece;
+        // #SpecialMove Castling En Passant
+        if(piece is Pawn)
+        {
+            if(posOrigin.Column != posDestiny.Column && capturedPiece == null)
+            {
+                Position posPawn;
+
+                if(piece.Color == Color.White)
+                {
+                    posPawn = new Position(posDestiny.Line + 1, posDestiny.Column);
+                }
+                else
+                {
+                    posPawn = new Position(posDestiny.Line - 1, posDestiny.Column);
+                }
+
+                capturedPiece = Board.RemovePiece(posPawn);
+                
+                if(capturedPiece != null)
+                {
+                    CapturedPieces.Add(capturedPiece);
+                }
+            }
+        }
+
+        return capturedPiece;
     }
 
     private void DoShortCastling(Position posOriginKing)
@@ -152,6 +179,30 @@ class ChessGame
         {
             UndoLongCastling(posOrigin);
         }
+
+        // #SpecialMove Castling En Passant
+        if(piece is Pawn)
+        {
+            if(posOrigin.Column != posDestiny.Column && capturedPiece == VulnerableEnPassant)
+            {
+                Piece? pawn = Board.RemovePiece(posDestiny);
+                Position posPawn;
+
+                if(piece.Color == Color.White)
+                {
+                    posPawn = new Position(3, posDestiny.Column);
+                }
+                else
+                {
+                    posPawn = new Position(4, posDestiny.Column);
+                }
+
+                if(pawn != null)
+                {
+                    Board.PutPiece(pawn, posPawn);
+                }
+            }
+        }
     }
 
     private void SwitchPlayer()
@@ -175,7 +226,7 @@ class ChessGame
 
         if(IsCheck(CurrentPlayer))
         {
-            UndoMove(posOrigin, posDestiny,capturedPiece);
+            UndoMove(posOrigin, posDestiny, capturedPiece);
             throw new BoardException("You cannot put yourself in check!");
         }
 
@@ -189,6 +240,22 @@ class ChessGame
         {
             Turn++;
             SwitchPlayer();
+        }
+
+        Piece? movedPiece = Board.GetPiece(posDestiny);
+
+        if(movedPiece != null)
+        {
+            // #SpecialMove En Passant
+            if(movedPiece is Pawn && (posDestiny.Line == posOrigin.Line - 2 || posDestiny.Line == posOrigin.Line + 2)
+            )
+            {
+                VulnerableEnPassant = movedPiece;
+            }
+            else
+            {
+                VulnerableEnPassant = null;
+            }
         }
     }
 
@@ -324,14 +391,14 @@ class ChessGame
         PutNewPiece('f', 1, new Bishop(Board, Color.White));
         PutNewPiece('g', 1, new Knight(Board, Color.White));
         PutNewPiece('h', 1, new Rook(Board, Color.White));
-        PutNewPiece('a', 2, new Pawn(Board, Color.White));
-        PutNewPiece('b', 2, new Pawn(Board, Color.White));
-        PutNewPiece('c', 2, new Pawn(Board, Color.White));
-        PutNewPiece('d', 2, new Pawn(Board, Color.White));
-        PutNewPiece('e', 2, new Pawn(Board, Color.White));
-        PutNewPiece('f', 2, new Pawn(Board, Color.White));
-        PutNewPiece('g', 2, new Pawn(Board, Color.White));
-        PutNewPiece('h', 2, new Pawn(Board, Color.White));
+        PutNewPiece('a', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('b', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('c', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('d', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('e', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('f', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('g', 2, new Pawn(Board, Color.White, this));
+        PutNewPiece('h', 2, new Pawn(Board, Color.White, this));
 
         // Black Pieces
         PutNewPiece('a', 8, new Rook(Board, Color.Black));
@@ -342,13 +409,13 @@ class ChessGame
         PutNewPiece('f', 8, new Bishop(Board, Color.Black));
         PutNewPiece('g', 8, new Knight(Board, Color.Black));
         PutNewPiece('h', 8, new Rook(Board, Color.Black));
-        PutNewPiece('a', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('b', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('c', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('d', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('e', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('f', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('g', 7, new Pawn(Board, Color.Black));
-        PutNewPiece('h', 7, new Pawn(Board, Color.Black));
+        PutNewPiece('a', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('b', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('c', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('d', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('e', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('f', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('g', 7, new Pawn(Board, Color.Black, this));
+        PutNewPiece('h', 7, new Pawn(Board, Color.Black, this));
     }
 }

@@ -22,7 +22,7 @@ try
 
             if(originPiece == null)
             {
-                throw new BoardException("OPrigin Piece is Empty");
+                throw new BoardException("Origin Piece is Empty");
             }
 
             bool[,] possiblePositions = originPiece.GetPossibleMoves();
