@@ -230,6 +230,27 @@ class ChessGame
             throw new BoardException("You cannot put yourself in check!");
         }
 
+        Piece? movedPiece = Board.GetPiece(posDestiny);
+
+        // #SpecialMove Promotion
+        if(movedPiece is Pawn)
+        {
+            if(
+                (movedPiece.Color == Color.White && posDestiny.Line == 0) 
+                || (movedPiece.Color == Color.Black && posDestiny.Line == 7)
+            )
+            {
+                movedPiece = Board.RemovePiece(posDestiny);
+                if(movedPiece != null)
+                {
+                    Pieces.Remove(movedPiece);
+                    Piece queen = new Queen(Board, movedPiece.Color);
+                    Board.PutPiece(queen, posDestiny);
+                    Pieces.Add(queen);
+                }
+            }
+        }
+
         Check = IsCheck(GetAdversary(CurrentPlayer));
 
         if(IsCheckMate(GetAdversary(CurrentPlayer)))
@@ -241,8 +262,6 @@ class ChessGame
             Turn++;
             SwitchPlayer();
         }
-
-        Piece? movedPiece = Board.GetPiece(posDestiny);
 
         if(movedPiece != null)
         {
