@@ -47,7 +47,79 @@ class ChessGame
             CapturedPieces.Add(caputuredPiece);
         }
 
+        // #SpecialMove Castling kingside (short)
+        if (origemPiece is King && posDestiny.Column == posOrigin.Column + 2)
+        {
+            DoShortCastling(posOrigin);
+        }
+
+        // #SpecialMove Castling queenside (long)
+        if (origemPiece is King && posDestiny.Column == posOrigin.Column - 2)
+        {
+            DoLongCastling(posOrigin);
+        }
+
         return caputuredPiece;
+    }
+
+    private void DoShortCastling(Position posOriginKing)
+    {
+        Position originRook = new Position(posOriginKing.Line, posOriginKing.Column + 3);
+        Position destinyRook = new Position(posOriginKing.Line, posOriginKing.Column + 1);
+        Piece? rook = Board.RemovePiece(originRook);
+        
+        if(rook == null)
+        {
+            throw new BoardException("Rook not found to castle!");
+        }
+
+        rook.IncreaseMovimentsNumber();
+        Board.PutPiece(rook, destinyRook);
+    }
+
+    private void DoLongCastling(Position posOriginKing)
+    {
+        Position originRook = new Position(posOriginKing.Line, posOriginKing.Column - 4);
+        Position destinyRook = new Position(posOriginKing.Line, posOriginKing.Column - 1);
+        Piece? rook = Board.RemovePiece(originRook);
+        
+        if(rook == null)
+        {
+            throw new BoardException("Rook not found to castle!");
+        }
+
+        rook.IncreaseMovimentsNumber();
+        Board.PutPiece(rook, destinyRook);
+    }
+
+    private void UndoShortCastling(Position posOriginKing)
+    {
+        Position originRook = new Position(posOriginKing.Line, posOriginKing.Column + 3);
+        Position destinyRook = new Position(posOriginKing.Line, posOriginKing.Column + 1);
+        Piece? rook = Board.RemovePiece(destinyRook);
+        
+        if(rook == null)
+        {
+            throw new BoardException("Rook not found to castle!");
+        }
+
+        rook.DecreaseMovimentsNumber();
+        Board.PutPiece(rook, originRook);
+    }
+
+    private void UndoLongCastling(Position posOriginKing)
+    {
+        Position originRook = new Position(posOriginKing.Line, posOriginKing.Column - 4);
+        Position destinyRook = new Position(posOriginKing.Line, posOriginKing.Column - 1);
+        Piece? rook = Board.RemovePiece(destinyRook);
+        
+        if(rook == null)
+        {
+            throw new BoardException("Rook not found to castle!");
+        }
+
+        rook.DecreaseMovimentsNumber();
+        Board.PutPiece(rook, originRook);
     }
 
     private void UndoMove(Position posOrigin, Position posDestiny, Piece? capturedPiece)
@@ -68,6 +140,18 @@ class ChessGame
         }
 
         Board.PutPiece(piece, posOrigin);
+
+        // #SpecialMove Castling kingside (short)
+        if (piece is King && posDestiny.Column == posOrigin.Column + 2)
+        {
+            UndoShortCastling(posOrigin);
+        }
+
+        // #SpecialMove Castling queenside (long)
+        if (piece is King && posDestiny.Column == posOrigin.Column - 2)
+        {
+            UndoLongCastling(posOrigin);
+        }
     }
 
     private void SwitchPlayer()
@@ -236,7 +320,7 @@ class ChessGame
         PutNewPiece('b', 1, new Knight(Board, Color.White));
         PutNewPiece('c', 1, new Bishop(Board, Color.White));
         PutNewPiece('d', 1, new Queen(Board, Color.White));
-        PutNewPiece('e', 1, new King(Board, Color.White));
+        PutNewPiece('e', 1, new King(Board, Color.White, this));
         PutNewPiece('f', 1, new Bishop(Board, Color.White));
         PutNewPiece('g', 1, new Knight(Board, Color.White));
         PutNewPiece('h', 1, new Rook(Board, Color.White));
@@ -254,7 +338,7 @@ class ChessGame
         PutNewPiece('b', 8, new Knight(Board, Color.Black));
         PutNewPiece('c', 8, new Bishop(Board, Color.Black));
         PutNewPiece('d', 8, new Queen(Board, Color.Black));
-        PutNewPiece('e', 8, new King(Board, Color.Black));
+        PutNewPiece('e', 8, new King(Board, Color.Black, this));
         PutNewPiece('f', 8, new Bishop(Board, Color.Black));
         PutNewPiece('g', 8, new Knight(Board, Color.Black));
         PutNewPiece('h', 8, new Rook(Board, Color.Black));
